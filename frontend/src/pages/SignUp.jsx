@@ -1,33 +1,34 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../providers/AuthProvider";
 import { useState } from "react";
-import { login } from "../services/users";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { signup } from "../services/users";
 
-const Login = () => {
-  const { setToken } = useAuth();
-  const navigate = useNavigate();
-
+const SignUp = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const [error, setError] = useState();
+  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const { data } = await login(username, password);
-      if (!data?.access_token) {
+      const { data } = await signup(username, password);
+      if (!data) {
         return toast.error("Something went wrong");
       }
 
-      setToken(data?.access_token);
-      navigate("/", { replace: true });
+      toast.success("Create new account successfully");
+      navigate("/login", { replace: true });
+
+      setUsername("");
+      setPassword("");
+
       setError("");
     } catch (error) {
       const resCode = error?.response?.status;
-      if (resCode === 404 || resCode === 401) {
-        setError("Wrong username or password");
+      if (resCode === 409) {
+        setError("Username existed");
         return;
       }
 
@@ -38,10 +39,10 @@ const Login = () => {
 
   return (
     <form
-      onSubmit={handleLogin}
+      onSubmit={handleSubmit}
       className="max-w-sm mx-auto mt-10 border rounded-lg p-8 shadow-md space-y-7"
     >
-      <h1 className="text-2xl font-bold">Login</h1>
+      <h1 className="text-2xl font-bold">Sign Up</h1>
 
       <div className="space-y-5">
         <div>
@@ -83,7 +84,7 @@ const Login = () => {
           type="submit"
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center"
         >
-          Login now
+          Create new account
         </button>
         <div className="relative flex justify-center">
           <span className="px-2 bg-white relative text-center z-10 mx-auto">
@@ -95,11 +96,11 @@ const Login = () => {
           to="/signup"
           className="text-blue-700 border block border-blue-700 hover:border-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center"
         >
-          Sign Up
+          Login now
         </Link>
       </div>
     </form>
   );
 };
 
-export default Login;
+export default SignUp;

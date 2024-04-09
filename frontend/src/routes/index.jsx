@@ -4,6 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Logout from "../pages/Logout";
+import SignUp from "../pages/SignUp";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -41,6 +42,10 @@ const Routes = () => {
       path: "/login",
       element: <Login />,
     },
+    {
+      path :"/signup",
+      element: <SignUp />,
+    }
   ];
 
   // Combine and conditionally include routes based on authentication status
