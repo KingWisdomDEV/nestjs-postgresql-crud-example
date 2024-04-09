@@ -9,6 +9,8 @@ import { abi } from "../abis/HLTHY.json";
 import { parseEther } from "viem";
 import { printNumber } from "./web3/utils";
 import { IconLoading } from "./Icons";
+import { ethers } from "ethers";
+import { useEthersSigner } from "./web3/useEthersSigner";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 const CONTRACT_NETWORK = +import.meta.env.VITE_CONTRACT_NETWORK;
@@ -20,7 +22,9 @@ const Transfer = () => {
 
   const { switchChain } = useSwitchChain();
   const { data: hash, isPending, writeContractAsync } = useWriteContract();
+  const signer = useEthersSigner();
 
+  // console.log('chain :>> ', connector.getProvider());
   // console.log('hash :>> ', hash);
   // console.log('isPending :>> ', isPending);
 
@@ -31,19 +35,32 @@ const Transfer = () => {
 
   const handleTransfer = async () => {
     if (!recipientAddress || +amount < 0) return;
-    console.log("amount", parseEther(amount));
-    try {
-      const res = await writeContractAsync({
-        address: CONTRACT_ADDRESS,
-        functionName: "transferWithDividend",
-        args: [recipientAddress, parseEther(amount)],
-        abi,
-        // abi: erc20Abi,
-        // functionName: "_transfer",
-        // args: [ address,recipientAddress, BigInt(amount)],
-      });
+    // console.log("amount", parseEther(amount));
 
-      console.log("res :>> ", res);
+    try {
+      const contract = new ethers.Contract(address, abi, signer);
+      const tx = await contract.transferWithDividend(
+        recipientAddress,
+        parseEther(amount)
+      );
+
+      console.log('tx :>> ', tx);
+
+      const hash = await tx.wait();
+      console.log('hash :>> ', hash);
+
+
+      // const res = await writeContractAsync({
+      //   address: CONTRACT_ADDRESS,
+      //   functionName: "transferWithDividend",
+      //   args: [recipientAddress, parseEther(amount)],
+      //   abi,
+      //   // abi: erc20Abi,
+      //   // functionName: "_transfer",
+      //   // args: [ address,recipientAddress, BigInt(amount)],
+      // });
+
+      // console.log("res :>> ", res);
     } catch (error) {
       console.log("error :>> ", error);
     }

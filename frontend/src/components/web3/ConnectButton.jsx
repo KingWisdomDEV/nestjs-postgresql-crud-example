@@ -28,6 +28,8 @@ export default function ConnectButton() {
     address,
   });
 
+  console.log("balance",balance)
+
   if (!address || !isConnected)
     return (
       <button
