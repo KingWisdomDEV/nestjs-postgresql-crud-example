@@ -1,29 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-    // private usersService: UsersService,
-    private jwtService: JwtService
-  ) {}
+    constructor(
+        @InjectRepository(User)
+        private readonly usersRepository: Repository<User>,
+        private jwtService: JwtService,
+    ) {}
 
-  async signIn(
-    walletAddress: string,
-  ): Promise<{ access_token: string }> {
-    const user = await this.usersRepository.findOne({where: {walletAddress}});
-    // if (user?.password !== pass) {
-    //   throw new UnauthorizedException();
-    // }
-    const payload = {  walletAddress: user.walletAddress };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
-  }
+    async signIn(
+        username: string,
+        password: string,
+    ): Promise<{ access_token: string }> {
+        const user = await this.usersRepository.findOne({
+            where: { username },
+        });
+        const isMatch = await bcrypt.compare(password, user?.password);
+
+        if (!isMatch) {
+            throw new UnauthorizedException();
+        }
+        const payload = { userId: user.id, username: user.username };
+        return {
+            access_token: await this.jwtService.signAsync(payload),
+        };
+    }
 }
