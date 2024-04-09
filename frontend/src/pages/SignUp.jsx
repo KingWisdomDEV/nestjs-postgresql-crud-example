@@ -4,8 +4,8 @@ import { toast } from "react-toastify";
 import { signup } from "../services/users";
 
 const SignUp = () => {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState();
   const navigate = useNavigate();
 
@@ -46,14 +46,10 @@ const SignUp = () => {
 
       <div className="space-y-5">
         <div>
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
+          <label className="block mb-2 text-sm font-medium text-gray-900">
             Username
           </label>
           <input
-            id="email"
             onChange={(e) => setUsername(e.target.value)}
             value={username}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -61,15 +57,11 @@ const SignUp = () => {
           />
         </div>
         <div>
-          <label
-            htmlFor="password"
-            className="block mb-2 text-sm font-medium text-gray-900"
-          >
+          <label className="block mb-2 text-sm font-medium text-gray-900">
             Password
           </label>
           <input
             type="password"
-            id="password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"

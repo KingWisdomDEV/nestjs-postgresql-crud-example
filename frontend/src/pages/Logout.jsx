@@ -1,15 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 export const useLogout = () => {
   const { setToken } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     setToken();
     navigate("/", { replace: true });
-  };
+  }, [navigate, setToken]);
 
   return { handleLogout };
 };
