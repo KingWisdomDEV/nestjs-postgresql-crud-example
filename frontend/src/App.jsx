@@ -1,10 +1,12 @@
-import Home from './pages/Home'
+import AuthProvider from "./providers/AuthProvider";
+import Routes from "./routes";
 
 function App() {
-
   return (
-    <Home/>
-  )
+    <AuthProvider>
+      <Routes />
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

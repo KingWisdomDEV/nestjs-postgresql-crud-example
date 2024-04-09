@@ -1,4 +1,3 @@
-import React from "react";
 import ConnectButton from "../components/web3/ConnectButton";
 
 const Home = () => {
