@@ -21,7 +21,12 @@ const Transfer = () => {
   const [amount, setAmount] = useState("");
 
   const { switchChain } = useSwitchChain();
-  const { data: hash, error, isPending, writeContractAsync } = useWriteContract();
+  const {
+    data: hash,
+    error,
+    isPending,
+    writeContractAsync,
+  } = useWriteContract();
   const {
     isLoading: isConfirming,
     error: errorConfirm,
@@ -62,7 +67,7 @@ const Transfer = () => {
 
   return (
     <div className="mt-10 border p-6 rounded-xl shadow-lg">
-      <h6 className="text-lg font-medium mb-5">Smart Contract</h6>
+      <h6 className="text-2xl font-bold mb-5 text-black">Smart Contract</h6>
       <p>Contract Address: {CONTRACT_ADDRESS}</p>
       <p>Supported Network: Binance Smart Chain Testnet</p>
 
@@ -94,7 +99,10 @@ const Transfer = () => {
         </div>
       </div>
       <p className="text-sm mt-2 text-right mb-5">
-        Your balance: {printNumber(balance?.formatted)} {balance?.symbol}
+        Your balance:{" "}
+        <span className="text-black font-medium">
+          {printNumber(balance?.formatted)} {balance?.symbol}
+        </span>
       </p>
 
       {chainId !== CONTRACT_NETWORK ? (
@@ -113,12 +121,12 @@ const Transfer = () => {
         </button>
       )}
 
-      {error && (
-        <div>Error: {error.shortMessage || error.message}</div>
-      )}
+      {error && <div>Error: {error.shortMessage || error.message}</div>}
 
       {errorConfirm && (
-        <div>Error Confirm: {errorConfirm.shortMessage || errorConfirm.message}</div>
+        <div>
+          Error Confirm: {errorConfirm.shortMessage || errorConfirm.message}
+        </div>
       )}
     </div>
   );

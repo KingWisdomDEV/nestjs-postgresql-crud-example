@@ -5,6 +5,7 @@ import { useAuth } from "../providers/AuthProvider";
 import { fetchProfile } from "../services/users";
 import Transfer from "../components/Transfer";
 import { toast } from "react-toastify";
+import Demo from "../components/Demo";
 
 const Home = () => {
   const [user, setUser] = useState();
@@ -31,10 +32,10 @@ const Home = () => {
   }, [handleLogout, token]);
 
   return (
-    <section className="max-w-screen-lg mx-auto px-6 mt-10">
+    <section className="max-w-screen-lg mx-auto px-6 py-10 text-[#828282]">
       <div className="flex justify-between items-center">
-        <p className="text-xl font-bold">
-          Hello, <strong>{user?.username}</strong>
+        <p className="text-xl text-black font-medium">
+          Hello, <span className="font-semibold">{user?.username}</span>
         </p>
         <button
           onClick={handleLogout}
@@ -43,11 +44,14 @@ const Home = () => {
           Logout
         </button>
       </div>
+      <h1 className="font-extrabold text-6xl text-black mt-10">Wallet Components</h1>
       <div className="mt-10">
         <ConnectButton />
       </div>
 
+
       <Transfer />
+      <Demo/>
     </section>
   );
 };
