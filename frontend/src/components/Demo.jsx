@@ -4,7 +4,7 @@ const Demo = () => {
   return (
     <div className="mt-10 flex gap-8">
       <div className="gap-8 flex flex-col">
-        <div className="border-2 rounded-2xl p-4 w-[360px] relative">
+        <div className="border-2 rounded-2xl p-4 w-[360px] relative overflow-hidden">
           <div className="absolute bottom-0 left-0">
             <img src="/imgs/ticket.png" alt="" className="h-32" />
           </div>
