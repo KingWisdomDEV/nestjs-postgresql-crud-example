@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { parseEther } from "viem";
 import {
   useAccount,
   useBalance,
   useSwitchChain,
+  useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
 import { abi } from "../abis/HLTHY.json";
-import { parseEther } from "viem";
-import { printNumber } from "./web3/utils";
 import { IconLoading } from "./Icons";
-import { ethers } from "ethers";
-import { useEthersSigner } from "./web3/useEthersSigner";
+import { printNumber } from "./web3/utils";
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 const CONTRACT_NETWORK = +import.meta.env.VITE_CONTRACT_NETWORK;
@@ -21,48 +21,40 @@ const Transfer = () => {
   const [amount, setAmount] = useState("");
 
   const { switchChain } = useSwitchChain();
-  const { data: hash, isPending, writeContractAsync } = useWriteContract();
-  const signer = useEthersSigner();
+  const { data: hash, error, isPending, writeContractAsync } = useWriteContract();
+  const {
+    isLoading: isConfirming,
+    error: errorConfirm,
+    isSuccess,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
 
-  // console.log('chain :>> ', connector.getProvider());
-  // console.log('hash :>> ', hash);
-  // console.log('isPending :>> ', isPending);
-
-  const { data: balance } = useBalance({
+  const { data: balance, refetch } = useBalance({
     address,
     token: CONTRACT_ADDRESS,
   });
 
+  useEffect(() => {
+    if (!isSuccess) return;
+
+    refetch();
+    toast.success("Transfer completed successfully");
+  }, [isSuccess, refetch]);
+
   const handleTransfer = async () => {
     if (!recipientAddress || +amount < 0) return;
-    // console.log("amount", parseEther(amount));
 
     try {
-      const contract = new ethers.Contract(address, abi, signer);
-      const tx = await contract.transferWithDividend(
-        recipientAddress,
-        parseEther(amount)
-      );
-
-      console.log('tx :>> ', tx);
-
-      const hash = await tx.wait();
-      console.log('hash :>> ', hash);
-
-
-      // const res = await writeContractAsync({
-      //   address: CONTRACT_ADDRESS,
-      //   functionName: "transferWithDividend",
-      //   args: [recipientAddress, parseEther(amount)],
-      //   abi,
-      //   // abi: erc20Abi,
-      //   // functionName: "_transfer",
-      //   // args: [ address,recipientAddress, BigInt(amount)],
-      // });
-
-      // console.log("res :>> ", res);
+      await writeContractAsync({
+        address: CONTRACT_ADDRESS,
+        functionName: "transferWithDividend",
+        args: [recipientAddress, parseEther(amount)],
+        abi,
+      });
     } catch (error) {
       console.log("error :>> ", error);
+      toast.error("Something went wrong");
     }
   };
 
@@ -77,7 +69,7 @@ const Transfer = () => {
       <div className="mt-6 space-y-5">
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-900">
-            Send to
+            Send token to address
           </label>
           <input
             onChange={(e) => setRecipientAddress(e.target.value)}
@@ -117,8 +109,16 @@ const Transfer = () => {
           className="border flex justify-center items-center gap-2 px-6 w-full py-2 bg-black hover:bg-black/80 text-white rounded-lg"
           onClick={handleTransfer}
         >
-          {isPending && <IconLoading />} Send now
+          {(isPending || isConfirming) && <IconLoading />} Send now
         </button>
+      )}
+
+      {error && (
+        <div>Error: {error.shortMessage || error.message}</div>
+      )}
+
+      {errorConfirm && (
+        <div>Error Confirm: {errorConfirm.shortMessage || errorConfirm.message}</div>
       )}
     </div>
   );

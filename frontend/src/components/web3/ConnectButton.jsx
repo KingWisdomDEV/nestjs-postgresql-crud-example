@@ -13,7 +13,6 @@ const IconArrowDown = () => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-chevron-down"
   >
     <path d="m6 9 6 6 6-6" />
   </svg>
@@ -27,8 +26,6 @@ export default function ConnectButton() {
   const { data: balance } = useBalance({
     address,
   });
-
-  console.log("balance",balance)
 
   if (!address || !isConnected)
     return (
